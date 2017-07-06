@@ -31,7 +31,6 @@ app.get('/send', (req, res) => {
     signName          : config.signName,
     templateCode      : config.templateCode,
   };
-  console.log("params", params);
   sms(params, (err, result) => {
     if (err) {
       return res.json({success: false, msg: err});
