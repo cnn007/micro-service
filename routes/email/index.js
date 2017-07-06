@@ -1,36 +1,43 @@
-const email   = require("smpt-mail");
-const marked  = require("marked");
-const express = require("express");
+const express     = require("express");
+const nodemailer  = require("nodemailer");
+
 const app     = express.Router();
 
 const auth    = require("../auth");
 const config  = require("./config");
-
 app.use(auth);
 
-app.post('/', (req, res) => {
-  const body = req.body;
-  let configEmail = {
-    smtpHost: config.smtpHost,
-    smtpUser: config.smtpUser,
-    smtpPass: config.smtpPass,
-    from: config.smtpUser,
-    to: body.to,
-    cc: body.cc,
-    subject: body.title,
-    htmlStr: marked(body.context || ''),
-    htmlContext: {}
-  };
-  if (body.hasOwnProperty('htmlContext')) {
-    configEmail.htmlStr = body.context;
-    configEmail.htmlContext = body.htmlContext;
+console.log("config", config);
+app.get('/send', (req, res) => {
+  const email = req.query.email;
+  const subject = req.query.subject;
+  const content = req.query.content;
+  if (!email) {
+    return res.status(401).json('email is missing');
   }
-  email(configEmail, (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({success: false});
+  const user = config.smtpUser;
+  const smtpConfig = {
+    host: config.smtpHost,
+    port: 465,
+    secure: true, // use SSL
+    auth: {
+      user: user,
+      pass: config.smtpPass
     }
-    return res.json({success: true});
+  };
+  const transporter = nodemailer.createTransport(smtpConfig);
+  const mailOptions = {
+    from: user,
+    to: email,
+    subject: subject,
+    html: content
+  };
+
+  transporter.sendMail(mailOptions, (err) => {
+    if (err) {
+      return res.status(500).json(err);
+    }
+    res.json({success: true});
   });
 });
 
