@@ -45,14 +45,3 @@ app.get('/send', (req, res) => {
 });
 
 module.exports = app;
-
-/**
- {
-success: false,
-msg: {
-Message: "触发业务级流控限制",
-RequestId: "412B7F73-DF91-4B15-9833-1D7F67C511DB",
-Code: "isv.BUSINESS_LIMIT_CONTROL"
-}
-}
- */
