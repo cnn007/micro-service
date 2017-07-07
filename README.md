@@ -26,7 +26,7 @@ some micro services for api server
 ```
 
 ### Documentation
-http://xxx.com
+https://github.com/tsq-nodejs/document
 
 ### Files
 
